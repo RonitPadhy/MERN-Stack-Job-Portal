@@ -22,7 +22,7 @@ class UserController {
         });
       }
 
-      const hashedPassword = await bcrypt.hash("password", 10);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       const newUser = await UserModel.create({
         fullName,
@@ -80,7 +80,7 @@ class UserController {
         role: user.role,
       };
 
-      const token = jwt.sign(tokenData, process.env.SECRET_KEY, {
+      const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
         expiresIn: "1d",
       });
 
@@ -103,6 +103,7 @@ class UserController {
         .json({
           message: `Welcome back ${user.fullName}`,
           user,
+          token,
           success: true,
         });
     } catch (err) {
@@ -132,11 +133,10 @@ class UserController {
       const { fullName, phoneNumber, email, bio, skills } = req.body;
       const file = req.file;
 
-      if (!fullName || !phoneNumber || !email || !bio || !skills) {
-        return res.status(400).json({ message: "Please enter all the fields" });
+      let skillsArray;
+      if (skills) {
+        skillsArray = skills.split(",");
       }
-
-      const skillsArray = skills.split(",");
       const userId = req.id;
 
       let user = await UserModel.findById(userId);
@@ -146,19 +146,27 @@ class UserController {
       }
 
       //Updating the user data below :-
-      user.fullName = fullName;
-      user.password = password;
-      user.phoneNumber = phoneNumber;
-      user.email = email;
-      user.profile.bio = bio;
-      user.profile.skills = skillsArray;
+      if (fullName) {
+        user.fullName = fullName;
+      }
+      if (phoneNumber) {
+        user.phoneNumber = phoneNumber;
+      }
+      if (email) {
+        user.email = email;
+      }
+      if (bio) {
+        user.profile.bio = bio;
+      }
+      if (skills) {
+        user.profile.skills = skillsArray;
+      }
 
       await user.save();
 
       user = {
         _id: user._id,
         fullName: user.fullName,
-        email: user.email,
         phoneNumber: user.phoneNumber,
         profile: user.profile,
         role: user.role,
