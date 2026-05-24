@@ -53,7 +53,7 @@ class UserController {
           .json({ message: "Please enter all the fields", success: false });
       }
 
-      const user = await UserModel.findOne({ email });
+      let user = await UserModel.findOne({ email });
       if (!user) {
         return res.status(404).json({
           message: "User not found...Please register",
@@ -76,13 +76,22 @@ class UserController {
       }
 
       const tokenData = {
-        _id: user._id,
+        userId: user._id,
         role: user.role,
       };
 
       const token = jwt.sign(tokenData, process.env.SECRET_KEY, {
         expiresIn: "1d",
       });
+
+      user = {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        profile: user.profile,
+        role: user.role,
+      };
 
       return res
         .status(200)
@@ -92,7 +101,8 @@ class UserController {
           maxAge: 1 * 24 * 60 * 60 * 1000,
         })
         .json({
-          message: "User logged in Succesfully",
+          message: `Welcome back ${user.fullName}`,
+          user,
           success: true,
         });
     } catch (err) {
@@ -116,4 +126,52 @@ class UserController {
         .json({ message: "Error Logging out", success: false });
     }
   }
+
+  static async updateProfile(req, res) {
+    try {
+      const { fullName, phoneNumber, email, bio, skills } = req.body;
+      const file = req.file;
+
+      if (!fullName || !phoneNumber || !email || !bio || !skills) {
+        return res.status(400).json({ message: "Please enter all the fields" });
+      }
+
+      const skillsArray = skills.split(",");
+      const userId = req.id;
+
+      let user = await UserModel.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "User doesn't exist" });
+      }
+
+      //Updating the user data below :-
+      user.fullName = fullName;
+      user.password = password;
+      user.phoneNumber = phoneNumber;
+      user.email = email;
+      user.profile.bio = bio;
+      user.profile.skills = skillsArray;
+
+      await user.save();
+
+      user = {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        profile: user.profile,
+        role: user.role,
+      };
+
+      return res
+        .status(200)
+        .json({ success: true, message: "User updated successfully" }, user);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ message: "Internal Server error" });
+    }
+  }
 }
+
+export default UserController;
