@@ -9,7 +9,7 @@ class JobController {
         description,
         requirements,
         salary,
-        experience,
+        experienceLevel,
         location,
         jobType,
         companyId,
@@ -22,7 +22,7 @@ class JobController {
         !description ||
         !requirements ||
         !salary ||
-        !experience ||
+        !experienceLevel ||
         !location ||
         !jobType ||
         !companyId ||
@@ -38,7 +38,8 @@ class JobController {
         description,
         requirements: requirements.split(","),
         salary: Number(salary),
-        experience,
+        experienceLevel,
+        jobType,
         location,
         position,
         company: companyId,
@@ -48,6 +49,7 @@ class JobController {
       return res.status(201).json({
         success: true,
         message: "Job created successfully for this Company",
+        job
       });
     } catch (err) {
       console.log("Error :-", err);
