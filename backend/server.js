@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import cors from "cors";
 import userRoutes from "./routes/user.routes.js";
+import companyRoutes from "./routes/company.routes.js";
 const app = express();
 dotenv.config();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/api/auth", userRoutes);
+app.use("/api/company", companyRoutes);
 connectDB();
 const corsOptions = {
   origin: "http://localhost:5173", //Frontend
