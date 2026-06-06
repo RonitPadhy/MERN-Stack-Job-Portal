@@ -10,10 +10,10 @@ router.post("/create", verifyToken, JobController.createJob);
 //For student
 router.get("/jobs", verifyToken, JobController.getAllJobs);
 
-//For student
-router.get("/:jobId", verifyToken, JobController.getJobById);
-
 //For ADMIN:-
 router.get("/createdJobs", verifyToken, JobController.getCreatedJobs);
+
+//For student
+router.get("/:jobId", verifyToken, JobController.getJobById);
 
 export default router;
