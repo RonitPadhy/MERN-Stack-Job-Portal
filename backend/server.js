@@ -6,6 +6,7 @@ import cors from "cors";
 import userRoutes from "./routes/user.routes.js";
 import companyRoutes from "./routes/company.routes.js";
 import jobRoutes from "./routes/job.routes.js";
+import applicationRoutes from "./routes/applicationRoutes.js";
 const app = express();
 dotenv.config();
 
@@ -15,7 +16,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/api/auth", userRoutes);
 app.use("/api/company", companyRoutes);
-app.use("/api/job",jobRoutes);
+app.use("/api/job", jobRoutes);
+app.use("/api/application", applicationRoutes);
 connectDB();
 const corsOptions = {
   origin: "http://localhost:5173", //Frontend
