@@ -49,7 +49,7 @@ class JobController {
       return res.status(201).json({
         success: true,
         message: "Job created successfully for this Company",
-        job
+        job,
       });
     } catch (err) {
       console.log("Error :-", err);
@@ -60,7 +60,7 @@ class JobController {
   // For Student
   static async getAllJobs(req, res) {
     try {
-      const { keyword } = req.query;
+      const { keyword = " " } = req.query;
       const query = {
         $or: [
           { title: { $regex: keyword, $options: "i" } },
@@ -74,7 +74,14 @@ class JobController {
           .json({ success: false, message: "User is not logged in" });
       }
 
-      const jobs = await Job.find(query);
+      const jobs = await Job.find(query)
+        .populate({
+          path: "company",
+          // populate : {
+          //   path : "userId"
+          // }
+        })
+        .sort({ createdAt: -1 });
       if (!jobs) {
         return res
           .status(404)
