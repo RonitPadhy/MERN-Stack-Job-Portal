@@ -12,7 +12,7 @@ router.get("/get-applied", verifyToken, ApplicationController.getAppliedjobs);
 
 // get all applicants for admin
 router.get(
-  "/applicants/:jobId",
+  "/:jobId/applicants",
   verifyToken,
   ApplicationController.getAllApplicants,
 );
