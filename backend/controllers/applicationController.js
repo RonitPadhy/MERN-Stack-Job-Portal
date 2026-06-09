@@ -6,7 +6,6 @@ class ApplicationController {
     try {
       const userId = req.id;
       const { jobId } = req.params;
-      console.log("req params :-----", jobId);
 
       if (!jobId) {
         return res
@@ -76,7 +75,6 @@ class ApplicationController {
         applications,
       });
     } catch (error) {
-      console.log('ERROR:-',error);
       return res
         .status(500)
         .json({ success: false, message: "Internal Server Error" });
