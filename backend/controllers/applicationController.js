@@ -5,16 +5,17 @@ class ApplicationController {
   static async applyJob(req, res) {
     try {
       const userId = req.id;
-      const { jobid } = req.params;
+      const { jobId } = req.params;
+      console.log("req params :-----", jobId);
 
-      if (!jobid) {
+      if (!jobId) {
         return res
           .status(400)
           .json({ success: false, message: "JobId is required" });
       }
       // Find if there is any existing application..
       const existingApplication = await Application.findOne({
-        job: jobid,
+        job: jobId,
         applicant: userId,
       });
 
@@ -25,14 +26,14 @@ class ApplicationController {
         });
       }
 
-      const job = await Job.findById(jobid);
+      const job = await Job.findById(jobId);
 
       if (!job) {
         return res.status(400).json({ message: "Job doesn't exist" });
       }
 
       const newApplication = await Application.create({
-        job: jobid,
+        job: jobId,
         applicant: userId,
       });
 
@@ -63,7 +64,7 @@ class ApplicationController {
           },
         });
 
-      if (!application) {
+      if (!applications) {
         return res
           .status(400)
           .json({ success: false, message: "No applications found" });
@@ -75,6 +76,7 @@ class ApplicationController {
         applications,
       });
     } catch (error) {
+      console.log('ERROR:-',error);
       return res
         .status(500)
         .json({ success: false, message: "Internal Server Error" });
@@ -96,6 +98,7 @@ class ApplicationController {
         options: { sort: { createdAt: -1 } },
         populate: {
           path: "applicant",
+          select : "fullName email phoneNumber"
         },
       });
 
@@ -143,12 +146,10 @@ class ApplicationController {
 
       await application.save();
 
-      return res
-        .status(200)
-        .json({
-          success: true,
-          message: `Application updated successfully to ${status}`,
-        });
+      return res.status(200).json({
+        success: true,
+        message: `Application updated successfully to ${status}`,
+      });
     } catch (error) {
       console.log("Error:-", error);
       return res
